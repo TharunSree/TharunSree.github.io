@@ -88,9 +88,29 @@ const firebaseConfig = {
     }
   }
   
-  function displayError(message) {
+  function displayError(error) {
     let errorElement = document.getElementById('error-message');
+    let message = '';
+
+    switch (error.code) {
+        case 'auth/invalid-email':
+            message = 'The email address is not valid.';
+            break;
+        case 'auth/user-disabled':
+            message = 'This user account has been disabled.';
+            break;
+        case 'auth/user-not-found':
+            message = 'No user found with this email.';
+            break;
+        case 'auth/wrong-password':
+            message = 'The password is incorrect.';
+            break;
+        default:
+            message = 'An unexpected error occurred: ' + error.message;
+    }
+
     errorElement.textContent = message;
     errorElement.style.display = 'block';
-  }
+}
+
   
