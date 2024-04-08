@@ -49,10 +49,14 @@ const firebaseConfig = {
   
     })
     .catch(function(error) {
-      // Firebase will use this to alert of its errors
-      var error_message = error.message;
-      displayError(error_message);
-    });
+    // Firebase will use this to alert of its errors
+    var error_message = error.message;
+    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        error_message = "Invalid email or password. Please check your credentials and try again.";
+    }
+    displayError(error_message);
+});
+
   }
   
   // Validate Functions
@@ -88,29 +92,9 @@ const firebaseConfig = {
     }
   }
   
-  function displayError(error) {
+  function displayError(message) {
     let errorElement = document.getElementById('error-message');
-    let message = '';
-
-    switch (error.code) {
-        case 'auth/invalid-email':
-            message = 'The email address is not valid.';
-            break;
-        case 'auth/user-disabled':
-            message = 'This user account has been disabled.';
-            break;
-        case 'auth/user-not-found':
-            message = 'No user found with this email.';
-            break;
-        case 'auth/wrong-password':
-            message = 'The password is incorrect.';
-            break;
-        default:
-            message = 'An unexpected error occurred: ' + error.message;
-    }
-
     errorElement.textContent = message;
     errorElement.style.display = 'block';
-}
-
+  }
   
