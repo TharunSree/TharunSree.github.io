@@ -53,9 +53,19 @@ const firebaseConfig = {
     var error_message = error.message;
     if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
         error_message = "Invalid email or password. Please check your credentials and try again.";
+    } else if (error.code === 'auth/invalid-email') {
+        error_message = "Invalid email format. Please enter a valid email address.";
+    } else if (error.code === 'auth/invalid-login-credentials' || error.message === 'INVALID_LOGIN_CREDENTIALS') {
+        error_message = "Invalid login credentials. Please double-check your email and password.";
+    } else if (error.code === 400 && error.message === 'INVALID_LOGIN_CREDENTIALS') {
+        error_message = "Your login credentials are incorrect. Please try again.";
+    } else {
+        error_message = "An unexpected error occurred. Please try again later.";
     }
     displayError(error_message);
-});
+})
+
+
 
   }
   

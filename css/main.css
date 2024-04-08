@@ -1451,7 +1451,7 @@ p:last-child {
 }
 
 .alert.alert-error {
-  border-left: 3px solid #e52b20;
+  border-left: 3px solid #D22B41;
 }
 
 .alert.alert-success {
@@ -1510,7 +1510,7 @@ p:last-child {
 }
 
 .error-message {
-  color: red;
+  color: #EF043A;
   font-size: 1em;
   margin-top: 5px;
 }
