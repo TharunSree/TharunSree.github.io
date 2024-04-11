@@ -14,60 +14,56 @@ const firebaseConfig = {
   
   // Set up our login function
   function login () {
-    // Get all our input fields
-    email = document.getElementById('email').value;
-    password = document.getElementById('password').value;
-  
-    // Validate input fields
-    if (validate_email(email) == false || validate_password(password) == false) {
-      displayError('Email or Password is Outta Line!!');
-      return;
-      // Don't continue running the code
-    }
-  
-    auth.signInWithEmailAndPassword(email, password)
+  // Get all our input fields
+  email = document.getElementById('email').value;
+  password = document.getElementById('password').value;
+  rememberMe = document.getElementById('remember-me').checked; // Add this line
+
+  // Validate input fields
+  if (validate_email(email) == false || validate_password(password) == false) {
+    displayError('Email or Password is Outta Line!!');
+    return;
+    // Don't continue running the code
+  }
+
+  // Set auth persistence
+  if (rememberMe) {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  } else {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  }
+
+  auth.signInWithEmailAndPassword(email, password)
+  .then(function() {
+    // Declare user variable
+    var user = auth.currentUser;
+
+    // Add this user to Firebase Database
+    var database_ref = database.ref();
+
+    // Create User data
+    var user_data = {
+      last_login : Date.now()
+    };
+
+    // Push to Firebase Database
+    database_ref.child('users/' + user.uid).update(user_data)
     .then(function() {
-      // Declare user variable
-      var user = auth.currentUser;
-  
-      // Add this user to Firebase Database
-      var database_ref = database.ref();
-  
-      // Create User data
-      var user_data = {
-        last_login : Date.now()
-      };
-  
-      // Push to Firebase Database
-      database_ref.child('users/' + user.uid).update(user_data)
-      .then(function() {
-        window.location.href = "success.html";
-      })
-      .catch(function(error) {
-        console.error('Error writing to database:', error);
-      });
-  
+      window.location.href = "success.html";
     })
     .catch(function(error) {
-    // Firebase will use this to alert of its errors
+      console.error('Error writing to database:', error);
+    });
+
+  })
+  .catch(function(error) {
+    // Handle errors here
     var error_message = error.message;
-    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-        error_message = "Invalid email or password. Please check your credentials and try again.";
-    } else if (error.code === 'auth/invalid-email') {
-        error_message = "Invalid email format. Please enter a valid email address.";
-    } else if (error.code === 'auth/invalid-login-credentials' || error.message === 'INVALID_LOGIN_CREDENTIALS') {
-        error_message = "Invalid login credentials. Please double-check your email and password.";
-    } else if (error.code === 400 && error.message === 'INVALID_LOGIN_CREDENTIALS') {
-        error_message = "Your login credentials are incorrect. Please try again.";
-    } else {
-        error_message = "An unexpected error occurred. Please try again later.";
-    }
+    // Add your error handling logic here
     displayError(error_message);
-})
+  });
+}
 
-
-
-  }
   
   // Validate Functions
   function validate_email(email) {
